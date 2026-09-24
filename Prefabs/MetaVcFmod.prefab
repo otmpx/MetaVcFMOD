@@ -1,0 +1,132 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5368344703410043848
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2483793644635379148}
+  - component: {fileID: 7236008657936430085}
+  - component: {fileID: 8661720852351149236}
+  - component: {fileID: 6244763482338441661}
+  - component: {fileID: 8113922654863198380}
+  - component: {fileID: 755354406641842523}
+  m_Layer: 0
+  m_Name: MetaVc
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2483793644635379148
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5368344703410043848}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7236008657936430085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5368344703410043848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a9958e1fac70e42b5e45207ebcbc69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioInput: {fileID: 8661720852351149236}
+  audioOutput: {fileID: 755354406641842523}
+  config:
+    application: 2048
+    complexity: 10
+    framesize: 5004
+    signal: 3001
+    jitterTimeWindow: 0.24
+    jitterMeanOffsetWindow: 100
+    outputMinBufferSize: 2
+  isEchoEnabled: 0
+  isSineOverrideEnabled: 0
+  maxCodecMilliseconds: 50
+  allowMultipleCodecWarningsPerFrame: 0
+  isDeafened:
+    value: 0
+  isInputMuted:
+    value: 1
+  isOutputMuted:
+    value: 0
+  isSpeaking:
+    value: 0
+--- !u!114 &8661720852351149236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5368344703410043848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566ca729670e5ae419457b7ce863e32f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  metaVc: {fileID: 7236008657936430085}
+  optionalFirstInputFilter: {fileID: 8113922654863198380}
+--- !u!114 &6244763482338441661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5368344703410043848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aca3564a703328342a3e1bb9397ee5a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vc: {fileID: 7236008657936430085}
+  audioInput: {fileID: 8661720852351149236}
+  gainFilter: {fileID: 8113922654863198380}
+  audioOutput: {fileID: 755354406641842523}
+--- !u!114 &8113922654863198380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5368344703410043848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f2f6f0c86bed2d4fadea92ab7d9a00a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  optionalNextInputFilter: {fileID: 0}
+  Gain: 1
+--- !u!114 &755354406641842523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5368344703410043848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c1f5a9ddc3e6444daf18d368648c616, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  metaVc: {fileID: 7236008657936430085}
+  optionalFirstOutputFilter: {fileID: 0}
+  fmodBusPath: bus:/VoiceChat
+  netEqConfig: {fileID: 11400000, guid: 8e0de2c39f0da214c99aaf8f03b0f03b, type: 2}
