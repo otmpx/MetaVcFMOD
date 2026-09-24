@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using MetaVoiceChat;
-using MetaVoiceChat.Input.Mic;
-using MetaVoiceChat.Utils;
 using UnityEngine;
 
 namespace BuburitoGames.MetaVcFMOD
@@ -21,7 +19,7 @@ namespace BuburitoGames.MetaVcFMOD
         public const float MaxVolume = 2f;
 
         [SerializeField] MetaVc vc;
-        [SerializeField] VcMicAudioInput audioInput;
+        [SerializeField] VcFmodMicAudioInput audioInput;
         [SerializeField] GainVcInputFilter gainFilter;
         [SerializeField] VcFmodOutput audioOutput;
 
@@ -33,7 +31,7 @@ namespace BuburitoGames.MetaVcFMOD
         public string PersistenceKey { get; private set; }
 
         float outputVolume = 1f;
-        MicrophoneDevicesListener devicesListener;
+        FmodRecordDevicesListener devicesListener;
 
         const string InputVolumeKey = "VoiceChat_InputVolume";
         const string OutputVolumeKey = "VoiceChat_OutputVolume";
@@ -62,7 +60,7 @@ namespace BuburitoGames.MetaVcFMOD
             if (isLocal)
             {
                 LocalInstance = this;
-                devicesListener = new MicrophoneDevicesListener(ApplySavedInputDevice);
+                devicesListener = new FmodRecordDevicesListener(ApplySavedInputDevice);
                 LoadInputSettings();
             }
 

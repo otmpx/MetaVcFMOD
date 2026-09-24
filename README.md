@@ -2,9 +2,11 @@
 
 FMOD output and player controls for [MetaVoiceChat](https://github.com/Metater/MetaVoiceChat).
 
-MetaVoiceChat plays voice through a Unity `AudioSource`. This package replaces that output with an
-FMOD user sound, so voice routes through an FMOD Studio bus like every other sound in an FMOD
-project. Playback uses the NetEQ jitter buffer that ships with MetaVoiceChat v4.3.
+MetaVoiceChat records through `UnityEngine.Microphone` and plays through a Unity `AudioSource`.
+This package replaces both ends with FMOD Core. Voice records through an FMOD record driver and
+plays through an FMOD user sound on an FMOD Studio bus. Playback uses the NetEQ jitter buffer that
+ships with MetaVoiceChat v4.3. With both ends on FMOD, you can disable the Unity audio engine, as
+the FMOD for Unity setup recommends.
 
 ## Terms
 
@@ -41,6 +43,9 @@ The package compiles into the default assembly with MetaVoiceChat. It has no ass
 | File | Role |
 |---|---|
 | `VcFmodOutput.cs` | The `VcAudioOutput` that plays through FMOD. Assign it as the `MetaVc` audio output. |
+| `VcFmodMicAudioInput.cs` | The `VcAudioInput` that records through FMOD. Assign it as the `MetaVc` audio input. Same surface as `VcMicAudioInput`. |
+| `VcFmodMic.cs` | The record driver wrapper behind `VcFmodMicAudioInput`. Downmixes to mono and resamples to 48 kHz. |
+| `FmodRecordDevicesListener.cs` | Polls the FMOD record driver list. Same surface as `MicrophoneDevicesListener`. |
 | `GainVcInputFilter.cs` | A `VcInputFilter` that multiplies mic samples by a gain value. |
 | `PlayerVoiceController.cs` | A facade over the voice object. Mic gain, mute, deafen, device selection and per-player output volume. Saves settings to `PlayerPrefs`. |
 | `UI/PlayerVolumeEntry.cs` | One UI row with a slider and a mute button. Binds to one `PlayerVoiceController`. |
@@ -76,7 +81,17 @@ default asset in `Assets/Metater/MetaVoiceChat/Configs`. Create your own asset f
 Only the NetEQ fields of that asset apply. `VcFmodOutput` ignores the resampler fields. FMOD
 resamples the 48 kHz stream to the mixer rate.
 
-### 4. Initialize the controller
+### 4. Disable Unity audio
+
+Open **Project Settings > Audio** and tick **Disable Unity Audio**. FMOD for Unity recommends this,
+and the package needs no Unity audio call. Skip this step if another system in your project still
+uses `AudioSource` or `UnityEngine.Microphone`.
+
+`VcFmodMicAudioInput` records at the rate and channel count the device reports. It downmixes to
+mono and resamples to 48 kHz before the frame reaches the filters. A 44.1 kHz stereo webcam mic
+works without extra setup.
+
+### 5. Initialize the controller
 
 Call `Initialize` on `PlayerVoiceController` from the network start hook of the owning player.
 Pass whether the player is local, and a persistence key for the remote player.
@@ -102,7 +117,7 @@ Pass an empty string as the key to disable the saved volume for that player.
 Only call `Initialize` on a voice object that will record or play. A voice object that never
 initializes does not appear in `PlayerVoiceController.Instances`.
 
-### 5. Deactivate the voice object on a server-only copy
+### 6. Deactivate the voice object on a server-only copy
 
 `VcFmodOutput` claims its FMOD stream in `Start` and releases it in `OnDestroy`. On a host, the
 server copy of a remote player starts before `OnStartClient` runs. Deactivate the voice object
@@ -163,6 +178,21 @@ foreach (PlayerVoiceController pvc in PlayerVoiceController.Instances)
 
 `SetVolume(float volume)` sets the FMOD channel volume from `0` to `1`. `PlayerVoiceController`
 calls it. Call it directly only when you do not use the controller.
+
+## How recording works
+
+1. `VcFmodMic` lists the connected FMOD record drivers and picks the selected device by name, or
+   the first device when the selected one is absent.
+2. It creates a one second FMOD user sound at the device rate and channel count, and starts the
+   record driver into it in loop mode.
+3. A coroutine on the main thread tracks the record cursor across ring wraps. Each time one frame
+   of input is ready, it locks that range of the sound, copies it out, and unlocks.
+4. The copy is downmixed to mono. When the device rate is not 48 kHz, the samples pass through the
+   MetaVoiceChat resampler and accumulate until a full 48 kHz frame exists.
+5. The frame goes to the input filters and then to `MetaVc`, the same path as `VcMicAudioInput`.
+
+If the record cursor moves more than a full ring ahead of the reader, for example across an editor
+pause, the reader jumps to one frame behind the cursor and drops the gap.
 
 ## How playback works
 
